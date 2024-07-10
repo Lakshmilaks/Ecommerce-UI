@@ -27,10 +27,10 @@ function Login() {
     .then((response) => {
       // Handle successful login
       console.log("Login successful:", response.data);
-      // if (response.status === 200) {
-      //   navigate("/");
-      // }
-      // q
+      if (response.status === 200) {
+        navigate("/");
+      }
+      
     })
     .catch((error) => {
       // Handle login error
