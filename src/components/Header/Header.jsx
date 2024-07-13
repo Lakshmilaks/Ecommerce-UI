@@ -23,6 +23,7 @@ export const Header = () => {
           <Operation link="/registration" name="Registration" />
           <Operation link="/cart" name="Cart" />
           <Operation link="/becomeASeller" name="Become a Seller" />
+          <Operation link="/logout" name="Logout" />
           <Operation link="/..." name="..." />
         </ul>
       </nav>
