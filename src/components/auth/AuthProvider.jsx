@@ -1,3 +1,4 @@
+
 import axios from 'axios';
 import { createContext, useEffect, useRef, useState } from 'react'
 import { useNavigate } from 'react-router-dom';
@@ -5,6 +6,7 @@ import { useNavigate } from 'react-router-dom';
 export const AuthContext=createContext(null)
 
 
+// eslint-disable-next-line react/prop-types
 const AuthProvider = ({children}) => {
 
     const[isLogin,setIsLogin] = useState(null)
@@ -21,7 +23,7 @@ const AuthProvider = ({children}) => {
         localStorage.setItem("userData",JSON.stringify(userData));
         // localStorage.setItem("accessExpiration", new Date(userData.accessExpiration * 1000).toString());
         // localStorage.setItem("refreshExpiration", new Date(userData.refreshExpiration * 1000).toString());
-        // localStorage.setItem("refreshToken", userData.refreshToken);
+        localStorage.setItem("refreshToken", userData.refreshToken);
     };
     const logout =() =>{
         setIsLogin(null);
@@ -37,12 +39,13 @@ const AuthProvider = ({children}) => {
                 headers: { "Content-Type": "application/json" },
                 withCredentials: true // Includes cookies with the request
             });
+            
             if (response.status === 200) {
                 let userData = response.data.data;
                 let nowDate = new Date().getTime();
                 localStorage.setItem("atExpiration", new Date(nowDate + (userData.accessExpiration * 1000)).toString());
                 localStorage.setItem("rtExpiration", new Date(nowDate + (userData.refreshExpiration * 1000)).toString());
-                // login(userData);
+                login(userData);
                 console.log("RT regenerated successfully done");
                 refreshTokenCalled.current = false; // Reset the ref after successful refresh
             }

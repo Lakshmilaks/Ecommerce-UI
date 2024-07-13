@@ -1,4 +1,4 @@
-import React from "react";
+
 import { NavLink } from "react-router-dom";
 import "./Header.css"
 
@@ -25,12 +25,15 @@ export const Header = () => {
           <Operation link="/becomeASeller" name="Become a Seller" />
           <Operation link="/logout" name="Logout" />
           <Operation link="/..." name="..." />
+         
+
         </ul>
       </nav>
     </header>
   );
 };
 
+// eslint-disable-next-line react/prop-types
 export function Operation({ link, name }) {
   return (
     <li

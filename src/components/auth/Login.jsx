@@ -1,10 +1,13 @@
 import axios from 'axios';
-import { useState } from 'react';
+import { useContext, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Loading from '../loader/Loading';
+import { AuthContext } from './AuthProvider';
 
-function Login() {
-  const [isLoading,setIsLoading] = useState(false)
+const Login = () => {
+  const [isLoading, setIsLoading] = useState(false);
+  const { login } = useContext(AuthContext);
+
   const [credentials, setCredentials] = useState({
     username: "",
     password: "",
@@ -13,53 +16,48 @@ function Login() {
 
   const handleChange = (e) => {
     setCredentials({
-      ...credentials,
+     ...credentials,
       [e.target.name]: e.target.value,
     });
   };
 
-  const submitFormData = async (e) => {
-    // const submitFormData = (e) => {
-
-    setIsLoading(true)
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log(credentials)
+    setIsLoading(true);
     try {
-        const response = await axios.post("http://localhost:8080/api/v1/login",
-            credentials,
-            {
-                headers: { "Content-Type": "application/json" },
-                withCredentials: true // Includes cookies with the request
-            }
-        );
-        
-        if (response.status === 200) {
-          let userData = response.data.data;
-          console.log(userData)
-          let nowDate = new Date().getTime()
-          localStorage.setItem("userData", JSON.stringify(userData))
-          localStorage.setItem("atExpiration", new Date(nowDate + (userData.accessExpiration * 1000)).toString());
-          localStorage.setItem("rtExpiration", new Date(nowDate + (userData.refreshExpiration * 1000)).toString());
-          Login(userData);
-          navigate("/")
+      const response = await axios.post("http://localhost:8080/api/v1/login",
+        credentials,
+        {
+          headers: { "Content-Type": "application/json" },
+          withCredentials: true // Includes cookies with the request
+        }
+      );
+      setCredentials({ username: "", password: "" })
+
+      if (response.status === 200) {
+        let userData = response.data.data;
+        let nowDate = new Date().getTime()
+        localStorage.setItem("userData", JSON.stringify(userData))
+        localStorage.setItem("atExpiration", new Date(nowDate + (userData.accessExpiration * 1000)).toString());
+        localStorage.setItem("rtExpiration", new Date(nowDate + (userData.refreshExpiration * 1000)).toString());
+        login(userData); // This line seems to be calling a function that is not defined in this scope
+        navigate("/")
       }
-      setIsLoading(false);
-     
-  } catch (error) {
+    } catch (error) {
       console.log(error)
       if (error.response.data.status === 401) {
-          console.log(error.response.data)
+        console.log(error.response.data)
       }
-      setIsLoading(false)
+    } finally {
+      setIsLoading(false);
+    }
   }
-}
-  
 
   return (
     <div className="container mx-auto p-4 pt-6 md:p-6 lg:p-12">
-       {isLoading ? <Loading /> : ""}
+      {isLoading? <Loading /> : ""}
       <h2 className="text-3xl font-bold mb-4">User Login</h2>
-      <form onSubmit={submitFormData} className="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4">
+      <form onSubmit={handleSubmit} className="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4">
         <div className="mb-4">
           <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="usename">
             UserName
@@ -69,7 +67,7 @@ function Login() {
             id="usename"
             type="text"
             name="username"
-            value={credentials.email}
+            value={credentials.username}
             onChange={handleChange}
           />
         </div>
@@ -103,6 +101,6 @@ function Login() {
       </form>
     </div>
   );
-
 }
+
 export default Login;
